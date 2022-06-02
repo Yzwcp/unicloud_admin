@@ -3,7 +3,22 @@
 
 
 
-        <yuan-table :columns="bulkcolumns" @getRecord="getRecord" :dataSource="dataSource"></yuan-table>
+        <yuan-table :columns="columns" @getRecord="getRecord" :dataSource="dataSource">
+            <template #bodyCell="{ column,record }" >
+                <template v-if="column.key === 'operation'">
+                    <a-button type="primary" @click="handledit(record)">编辑</a-button>
+                    <a-divider type="vertical" />
+                    <a-popconfirm
+                        title="删除这条记录吗"
+                        ok-text="是的"
+                        cancel-text="No"
+                        @confirm="handleDelete(record)"
+                    >
+                        <a-button type="primary" danger >删除</a-button>
+                    </a-popconfirm>
+                </template>
+            </template>
+        </yuan-table>
         <yuan-modal 
             :visible="visible"
             @cancel="visible=false"  
@@ -59,7 +74,7 @@
 <script>
 import yuanTable from "@/components/yuanTable.vue";
 import yuanModal from "@/components/yuanModal.vue";
-import bulkcolumns from './colums/bulkcolumns'
+import columns from './colums/bulkcolumns'
 import dayjs from "dayjs"
 import * as qiniu from 'qiniu-js'
 export default {
@@ -69,7 +84,7 @@ export default {
     },
     data() {
         return {
-            bulkcolumns,
+            columns,
             dataSource:[],
             visible:false,
             confirmLoading:false,
