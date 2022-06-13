@@ -4,20 +4,7 @@
 
 
         <yuan-table :columns="columns" @getRecord="getRecord" :dataSource="dataSource">
-            <template #bodyCell="{ column,record }" >
-                <template v-if="column.key === 'operation'">
-                    <a-button type="primary" @click="handledit(record)">编辑</a-button>
-                    <a-divider type="vertical" />
-                    <a-popconfirm
-                        title="删除这条记录吗"
-                        ok-text="是的"
-                        cancel-text="No"
-                        @confirm="handleDelete(record)"
-                    >
-                        <a-button type="primary" danger >删除</a-button>
-                    </a-popconfirm>
-                </template>
-            </template>
+            
         </yuan-table>
         <yuan-modal 
             :visible="visible"
@@ -225,7 +212,6 @@ export default {
             })
         },
         handleOk(){
-            console.log(this.$refs.formRef);
             this.$refs.formRef.validate().then(res=>{
                 let data = {...this.formState,content_img:this.fileList}
                 data.endtime = dayjs(data.endtime).valueOf()

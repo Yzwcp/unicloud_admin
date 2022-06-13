@@ -29,5 +29,5 @@ export default [{
 },{
     title: '操作',
     dataIndex: 'operation',
-    key: 'operation'
+    key: 'operation,edit,delete'
 }]

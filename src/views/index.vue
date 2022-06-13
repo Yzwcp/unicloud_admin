@@ -1,13 +1,12 @@
 <template>
     <a-layout>
     <a-layout-sider v-model:collapsed="collapsed" :trigger="null" collapsible>
-      <div class="logo" />
-      <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
-        <a-menu-item key="1">
+      <a-menu key="1" theme="dark" mode="inline" :selectedKeys="[$route.path]">
+        <a-menu-item key="/bulk">
           <user-outlined />
           <router-link to="/bulk">活动</router-link>
         </a-menu-item>
-        <a-menu-item key="2">
+        <a-menu-item key="/bulkorder">
           <video-camera-outlined />
           <router-link to="/bulkorder">订单</router-link>
         </a-menu-item>
@@ -55,7 +54,6 @@ export default {
     data() {
         return {
             collapsed:false,
-            selectedKeys:['1']
         };
     },
 
