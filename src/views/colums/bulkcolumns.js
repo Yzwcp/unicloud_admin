@@ -20,8 +20,15 @@ export default [{
     key: 'price'
 },{
     title: '状态',
-    dataIndex: 'status',
-    key: 'status',
+    dataIndex: 'stand',
+    key: 'stand',
+    customRender: ({text,record}) => { // customRender属性是一个方法，可接收三个参数（val,row,index），分别是当前值、当前行数据和当前索引，与方式 1 中模版的 slot-scope 属性传参类似
+        let statusObj={
+            0:'已下架',
+            1:'已上架',
+        }
+        return statusObj[text]
+    }
 },{
     title: '人数',
     dataIndex: 'groupsize',

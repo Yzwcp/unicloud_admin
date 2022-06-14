@@ -1,19 +1,39 @@
 export default [{
     title: 'id',
     dataIndex: '_id',
-    key: '_id'
-},{
-    title: '商品id',
-    dataIndex: 'bulk_id',
-    key: 'bulk_id'
+    key: '_id',
+    width:"100px",
+    ellipsis:true
 },{
     title: '用户id',
     dataIndex: 'user_id',
-    key: 'user_id'
+    key: 'user_id',
+    width:"100px",
+    ellipsis:true
+
+},{
+    title: '用户名',
+    dataIndex: 'nickName',
+    key: 'nickName',
+    width:"100px",
+
+},{
+    title: '商品标题',
+    dataIndex: 'bulk',
+    key: 'bulk_id',
+    width:"300px",
+
+    customRender: ({text,record}) => { // customRender属性是一个方法，可接收三个参数（val,row,index），分别是当前值、当前行数据和当前索引，与方式 1 中模版的 slot-scope 属性传参类似
+        if(text){
+            return text[0].title
+        }
+    }
 },{
     title: '状态',
     dataIndex: 'status',
     key: 'status',
+    width:"300px",
+
     customRender: ({text,record}) => { // customRender属性是一个方法，可接收三个参数（val,row,index），分别是当前值、当前行数据和当前索引，与方式 1 中模版的 slot-scope 属性传参类似
         let statusObj={
             "1":'正在进行',

@@ -3,7 +3,7 @@
 
 
 
-        <yuan-table :columns="columns" @getRecord="getRecord" :dataSource="dataSource">
+        <yuan-table :columns="columns" @handleReresh="handleReresh" :loading="confirmLoading" @getRecord="getRecord" :dataSource="dataSource">
             
         </yuan-table>
         <yuan-modal 
@@ -24,7 +24,7 @@
                 :rules="rules"
             >
                 <a-form-item label="活动标题" name="title" >
-                    <a-input v-model:value="formState.title" />
+                    <a-textarea v-model:value="formState.title" />
                 </a-form-item>
                 <a-form-item label="原价" name="old_price" >
                     <a-input-number v-model:value="formState.old_price"  />
@@ -35,6 +35,25 @@
                 <a-form-item label="成团需要人数" name="groupsize" >
                     <a-input-number v-model:value="formState.groupsize"  />
                 </a-form-item>
+                <a-form-item label="爆款置顶" name="virtual" >
+                    <a-radio-group v-model:value="formState.hot" button-style="solid">
+                        <a-radio-button :value="1">是</a-radio-button>
+                        <a-radio-button :value="0">否</a-radio-button>
+                    </a-radio-group>
+                </a-form-item>
+                <a-form-item label="是否虚拟" name="virtual" >
+                    <a-radio-group v-model:value="formState.virtual" button-style="solid">
+                        <a-radio-button :value="1">虚拟物品</a-radio-button>
+                        <a-radio-button :value="0">实物(需物流)</a-radio-button>
+                    </a-radio-group>
+                </a-form-item>
+                <a-form-item label="状态" name="virtual" >
+                    <a-radio-group v-model:value="formState.stand" button-style="solid">
+                        <a-radio-button :value="1">上架</a-radio-button>
+                        <a-radio-button :value="0">下架</a-radio-button>
+                    </a-radio-group>
+                </a-form-item>
+         
                 <a-form-item label="结束时间" name="endtime" >
                      <a-date-picker v-model:value="formState.endtime" />
                 </a-form-item>
@@ -95,10 +114,10 @@ export default {
         // this.$api.usercenter({username:'yzwyzw',password:'123456'},'login').then(res=>{
         //     console.log(res);
         // })
-        // this.$api.bulkcenter({username:'yzwyzw',password:'123456'},'query').then(res=>{
+        // this.$api.bulkcenter({username:'yzwyzw',password:'123456'},'adminquery').then(res=>{
         //     console.log(res);
         // })
-        this.initData({},'query')
+        this.initData({},'adminquery')
         this.upload({},'querytoken')
     },
 
@@ -127,6 +146,10 @@ export default {
         },
         beforeUpload(file, fileList){
             return false;
+        },
+        handleReresh(){
+            this.initData({},'adminquery')
+
         },
         handleUpload (files,fileList){
 
@@ -160,8 +183,8 @@ export default {
                             uid:res.hash,
                             name:res.key.replace(username+"/",''),
                             key:res.key,
-                            url:"http://rbuxij9m0.bkt.clouddn.com/"+res.key,
-                            thumbUrl:"http://rbuxij9m0.bkt.clouddn.com/"+res.key,
+                            url:"http://umep.ltd/"+res.key,
+                            thumbUrl:"http://umep.ltd/"+res.key,
                         })
                         //上传成功
                         /* code ···  */
@@ -199,11 +222,11 @@ export default {
         initData(data,action){
             this.confirmLoading=true
             this.$api.bulkcenter(data,action).then(res=>{
-                if(action=='query'){
+                if(action=='adminquery'){
                     this.dataSource =res.data
                     return
                 }else{
-                    this.initData({},'query')
+                    this.initData({},'adminquery')
                     this.visible=false
                 }
 
