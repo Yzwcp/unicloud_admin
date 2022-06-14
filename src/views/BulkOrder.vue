@@ -44,11 +44,14 @@
                 @finish="onFinish"
                 :rules="rules"
             >
-                <a-form-item label="物流单号" name="way_number" >
+                <a-form-item :label="bulkorderObj.virtual==1?'兑换地址':'物流商家'"  name="way_name" >
+                    <a-input v-model:value="formState.way_name" />
+                </a-form-item>
+                <a-form-item  :label="bulkorderObj.virtual==1?'卡密':'物流单号'" name="way_number" >
                     <a-input v-model:value="formState.way_number" />
                 </a-form-item>
-                
             </a-form>
+            
         </yuan-modal>
     </div>
 </template>
@@ -74,7 +77,8 @@ export default {
             formState:{},
             row:{},
             rules:{
-                way_number:{required: true, message: '请输入物流单号'},
+                way_number:{required: true, message: '请输入'},
+                way_name:{required: true, message: '请输入'},
                 
             },
             pagination:{
@@ -98,7 +102,11 @@ export default {
     mounted() {
         this.initData({},'adminquery')
     },
-
+    computed:{
+        bulkorderObj(){
+            return this.row.bulk && this.row.bulk[0]
+        },
+    },
     methods: {
         handledit(record){
             this.row = {...record}
