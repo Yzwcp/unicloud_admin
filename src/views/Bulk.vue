@@ -57,7 +57,8 @@
                 <a-form-item label="结束时间" name="endtime" >
                      <a-date-picker v-model:value="formState.endtime" />
                 </a-form-item>
-                <a-form-item label="结束时间" name="endtime" >
+                
+                <a-form-item label="上传文件" name="endtime" >
                    <a-upload
                     :file-list="fileList"
                     list-type="picture"
@@ -71,6 +72,16 @@
                         upload
                     </a-button>
                     </a-upload>
+                </a-form-item>
+                <a-form-item label="手动上传" >
+                        <a-input-search
+                        v-model:value="handlevalue"
+                        placeholder=""
+                        >
+                        <template #enterButton>
+                            <a-button @click="handleAddImgUrl">添加</a-button>
+                        </template>
+                        </a-input-search>
                 </a-form-item>
             </a-form>
         </yuan-modal>
@@ -105,6 +116,8 @@ export default {
             },
             fileList:[],
             imgToken:'',
+            iconBase64:'',
+            handlevalue:""
         };
     },
     computed:{
@@ -151,45 +164,82 @@ export default {
             this.initData({},'adminquery')
 
         },
-        handleUpload (files,fileList){
-
+        imageToBase64 (file) {
+          return  new Promise(r=>{
+                let iconBase64 = ''
+                var reader = new FileReader()
+                reader.readAsDataURL(file)
+                reader.onload = () => {
+                    console.log('file 转 base64结果：' + reader.result)
+                    this.iconBase64 = reader.result
+                    r(reader.result)
+                }
+                reader.onerror = function (error) {
+                    console.log('Error: ', error)
+                }
+            })
             
+        },
+        handleAddImgUrl(){
+            this.fileList.push({
+                uid:this.handlevalue,
+                name:this.handlevalue,
+                key:this.handlevalue,
+                url:this.handlevalue,
+                thumbUrl:this.handlevalue,
+            })
+            this.handlevalue=''
+        },
+        async handleUpload (files,fileList){
+
             let file =  files.file
             if(files.file.status==='removed'){
                 return
             }
-            let config = {
-            useCdnDomain: true,
-            forceDirect:true,//禁止片上传
+            if(file.size>1024*1024){
+                return this.$message.error('图片大小不超过1m')
             }
-            let username = 'yzw'
-            const name =username+ '/'+ file.lastModified+'_'+file.name
-            const putExtra = null
-            var observable = qiniu.upload(file, name, this.imgToken,{fname:file.name},config)
-            observable.subscribe({
-                    next: (result) => {
-                        //上传进度
-                        // if (response.total.percent > 0) {
-                        //     /* code ···  */
-                        // }
-                    },
-                    error: () => {
-                        //上传失败
-                        /* code ···  */
-                    },
-                    complete: (res) => {
-                        console.log(res);
-                        this.fileList.push({
-                            uid:res.hash,
-                            name:res.key.replace(username+"/",''),
-                            key:res.key,
-                            url:"http://umep.ltd/"+res.key,
-                            thumbUrl:"http://umep.ltd/"+res.key,
-                        })
-                        //上传成功
-                        /* code ···  */
-                    },
-                });
+            await this.imageToBase64(file)
+            const {fileID,name,timeStamp}= await this.$api.upload({imgbase64:this.iconBase64,name:file.name},'add')
+            this.fileList.push({
+                uid:timeStamp+name,
+                name:name,
+                key:name,
+                url:fileID,
+                thumbUrl:fileID,
+            })
+            // let config = {
+            // useCdnDomain: true,
+            // forceDirect:true,//禁止片上传
+            // }
+            // let username = 'yzw'
+            // const name =username+ '/'+ file.lastModified+'_'+file.name
+            // const putExtra = null
+            // var observable = qiniu.upload(file, name, this.imgToken,{fname:file.name},config)
+            // observable.subscribe({
+            //         next: (result) => {
+            //             //上传进度
+            //             // if (response.total.percent > 0) {
+            //             //     /* code ···  */
+            //             // }
+            //         },
+            //         error: () => {
+            //             //上传失败
+            //             /* code ···  */
+            //         },
+            //         complete: (res) => {
+            //             console.log(res);
+            //             this.fileList.push({
+            //                 uid:res.hash,
+            //                 name:res.key.replace(username+"/",''),
+            //                 key:res.key,
+            //                 url:"http://umep.ltd/"+res.key,
+            //                 thumbUrl:"http://umep.ltd/"+res.key,
+            //             })
+            //             //上传成功
+            //             /* code ···  */
+            //         },
+            //     });
         },
         getRecord(record){
             const {row,action} = record
@@ -238,6 +288,7 @@ export default {
             this.$refs.formRef.validate().then(res=>{
                 let data = {...this.formState,content_img:this.fileList}
                 data.endtime = dayjs(data.endtime).valueOf()
+                this.handlevalue=''
                 switch(this.action){
                     case 'add':
                         this.initData(data,'add')
